@@ -1,45 +1,170 @@
 <!DOCTYPE html>
 <html lang="fa">
 <head>
-  <meta charset="UTF-8">
-  <title>کتابخونه MiniAI</title>
-  <style>
-    body { background:#111; color:#eee; font-family:sans-serif; display:flex; flex-direction:column; align-items:center; padding:20px; }
-    #chat { width:400px; max-height:400px; overflow:auto; border:1px solid #444; padding:10px; border-radius:8px; }
-    .msg { margin:5px 0; }
-    .user { text-align:right; color:#0f0; }
-    .bot { text-align:left; color:#0af; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>چت‌بات ابر BK</title>
+<style>
+/* =================== Reset & Base =================== */
+* {margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;}
+body {background:#f0f2f5;direction:rtl;text-align:right;color:#333;}
+a {text-decoration:none;color:inherit;}
+
+/* =================== Container =================== */
+.container {
+  max-width: 900px;
+  margin:40px auto;
+  background:#fff;
+  border-radius:15px;
+  box-shadow:0 8px 25px rgba(0,0,0,0.15);
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+}
+
+/* =================== Header =================== */
+header {
+  background:#4a89dc;
+  padding:20px;
+  color:#fff;
+  text-align:center;
+  font-size:1.8rem;
+  font-weight:bold;
+}
+
+/* =================== Chat =================== */
+.chat-container {
+  flex:1;
+  padding:20px;
+  height:500px;
+  overflow-y:auto;
+  background:#f7f7f7;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.message {
+  max-width:70%;
+  padding:12px 18px;
+  border-radius:20px;
+  word-wrap:break-word;
+  line-height:1.4;
+  font-size:1rem;
+  transition:all 0.3s;
+}
+
+.bot-message {
+  background:#e6e6e6;
+  align-self:flex-start;
+}
+
+.user-message {
+  background:#dcf8c6;
+  align-self:flex-end;
+}
+
+/* =================== Input =================== */
+.input-container {
+  display:flex;
+  gap:10px;
+  padding:15px;
+  background:#fafafa;
+  border-top:1px solid #ddd;
+}
+
+input {
+  flex:1;
+  padding:12px 20px;
+  border:1px solid #ddd;
+  border-radius:25px;
+  font-size:1rem;
+  outline:none;
+}
+
+button {
+  padding:12px 25px;
+  background:#4a89dc;
+  color:#fff;
+  border:none;
+  border-radius:25px;
+  cursor:pointer;
+  font-size:1rem;
+  transition:background 0.3s;
+}
+
+button:hover {background:#3a70b0;}
+
+/* =================== Scrollbar =================== */
+.chat-container::-webkit-scrollbar {
+  width:8px;
+}
+.chat-container::-webkit-scrollbar-track {
+  background:#f1f1f1;
+  border-radius:10px;
+}
+.chat-container::-webkit-scrollbar-thumb {
+  background:#ccc;
+  border-radius:10px;
+}
+.chat-container::-webkit-scrollbar-thumb:hover {
+  background:#999;
+}
+
+/* =================== Footer / Info =================== */
+footer {
+  text-align:center;
+  font-size:0.9rem;
+  padding:10px;
+  background:#f0f2f5;
+  color:#555;
+}
+</style>
 </head>
 <body>
-  <h1>🤖 MiniAI Chatbot (نسخه اولیه)</h1>
-  <div id="chat"></div>
-  <input id="input" type="text" placeholder="پیام بنویس..." style="width:400px;padding:10px;margin-top:10px;" />
-  <script type="module">
-    import { MiniAI } from './ai.js';
 
-    const ai = new MiniAI();
-    const chat = document.getElementById("chat");
-    const input = document.getElementById("input");
+<div class="container">
+  <header>چت‌بات ابر BK</header>
 
-    function addMessage(text, cls){
-      const div = document.createElement("div");
-      div.className = "msg " + cls;
-      div.textContent = text;
-      chat.appendChild(div);
-      chat.scrollTop = chat.scrollHeight;
-    }
+  <div class="chat-container" id="chatContainer">
+    <div class="message bot-message">سلام! من ابر BK هستم، با من صحبت کن 😎</div>
+  </div>
 
-    input.addEventListener("keydown", e => {
-      if(e.key === "Enter"){
-        const msg = input.value.trim();
-        if(!msg) return;
-        addMessage(msg, "user");
-        const reply = ai.reply(msg);
-        addMessage(reply, "bot");
-        input.value = "";
-      }
-    });
-  </script>
+  <div class="input-container">
+    <input type="text" id="userInput" placeholder="پیام خود را اینجا تایپ کنید...">
+    <button id="sendBtn">ارسال</button>
+  </div>
+
+  <footer>
+    طراحی حرفه‌ای UI برای چت‌بات ابر BK – آماده هماهنگی با JS
+  </footer>
+</div>
+
+<script src="bkChat.js"></script>
+<script>
+const inputField = document.getElementById("userInput");
+const sendBtn = document.getElementById("sendBtn");
+const chatContainer = document.getElementById("chatContainer");
+
+function addMessage(msg,type){
+  const el = document.createElement("div");
+  el.classList.add("message", type==="user"?"user-message":"bot-message");
+  el.textContent = msg;
+  chatContainer.appendChild(el);
+  chatContainer.scrollTop = chatContainer.scrollHeight;
+}
+
+function sendMessage(){
+  const msg = inputField.value.trim();
+  if(msg==="") return;
+  addMessage(msg,"user");
+  inputField.value="";
+  setTimeout(()=>{ addMessage(generateResponse(msg),"bot"); }, 500);
+}
+
+sendBtn.addEventListener("click",sendMessage);
+inputField.addEventListener("keypress", e=>{ if(e.key==="Enter") sendMessage(); });
+</script>
+
 </body>
 </html>
