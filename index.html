@@ -223,7 +223,7 @@
       color: #6b7280;
       position: absolute;
       bottom: -1.2rem;
-      left: 0.75rem;
+      right: 0.75rem; /* Adjusted for RTL */
     }
     .copy-btn {
       font-size: 0.7rem;
@@ -233,7 +233,7 @@
       cursor: pointer;
       position: absolute;
       bottom: -1.2rem;
-      right: 0.75rem;
+      left: 0.75rem; /* Adjusted for RTL */
       transition: color 0.3s ease;
     }
     .copy-btn.copied {
@@ -247,6 +247,10 @@
       align-items: center;
       gap: 0.3rem;
       margin-right: auto;
+      padding: 0.75rem 1rem;
+      border-radius: 12px;
+      background: #f3f4f6;
+      max-width: fit-content;
     }
     .dots span {
       animation: blink 1.2s infinite;
@@ -439,7 +443,7 @@
       const typingDiv = document.createElement("div");
       typingDiv.className = "typing";
       typingDiv.id = "typingIndicator";
-      typingDiv.innerHTML = '<div class="dots"><span>.</span><span>.</span><span>.</span></div><span>در حال نوشتن</span>';
+      typingDiv.innerHTML = 'در حال نوشتن...';
       chatBox.appendChild(typingDiv);
       chatBox.scrollTop = chatBox.scrollHeight;
     };
@@ -530,56 +534,4 @@
     };
     const toggleHistory = () => {
       chatHistory.style.display = chatHistory.style.display === "none" ? "block" : "none";
-      chatHistory.innerHTML = "<h3>چت‌های قبلی</h3>";
-      Object.keys(localStorage)
-        .filter(k => k.startsWith("chat-"))
-        .forEach(key => {
-          const data = JSON.parse(localStorage.getItem(key));
-          const btn = document.createElement("button");
-          btn.textContent = data.title || "چت بدون عنوان";
-          btn.onclick = () => {
-            messages = data.messages;
-            chatId = key.split("-")[1];
-            renderMessages();
-            chatHistory.style.display = "none";
-          };
-          chatHistory.appendChild(btn);
-        });
-    };
-    const toggleContactPanel = () => {
-      contactPanel.style.display = contactPanel.style.display === "none" ? "block" : "none";
-    };
-    const copyText = (text) => {
-      navigator.clipboard.writeText(text);
-      const copyBtn = [...document.querySelectorAll('.copy-btn')].find(btn => btn.parentElement.textContent.includes(text));
-      if (copyBtn) {
-        copyBtn.textContent = "کپی شد!";
-        setTimeout(() => {
-          copyBtn.textContent = "کپی";
-        }, 1500);
-      }
-    };
-    const callNumber = (number) => {
-      window.location.href = `tel:${number}`;
-    };
-    const toggleDarkMode = () => {
-      body.classList.toggle('dark-mode');
-      if (body.classList.contains('dark-mode')) {
-        localStorage.setItem('darkMode', 'enabled');
-      } else {
-        localStorage.setItem('darkMode', 'disabled');
-      }
-    };
-    const handleKeyPress = (event) => {
-      if (event.key === 'Enter' && !event.shiftKey) {
-        event.preventDefault();
-        sendMessage();
-      }
-    };
-    const autoResizeTextarea = () => {
-      userInput.style.height = 'auto';
-      userInput.style.height = userInput.scrollHeight + 'px';
-    };
-  </script>
-</body>
-</html>
+      chatHistory.innerHTML = "<h3>چت‌های
